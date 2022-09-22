@@ -4,13 +4,21 @@
   
   
   <entry>
-    <title>Hello World</title>
+    <title>这是第一篇博客</title>
     <link href="/2022/09/22/Hello-World-0/"/>
     <url>/2022/09/22/Hello-World-0/</url>
     
     <content type="html"><![CDATA[<h3 id="你好，欢迎来到我的博客页面"><a href="#你好，欢迎来到我的博客页面" class="headerlink" title="你好，欢迎来到我的博客页面"></a>你好，欢迎来到我的博客页面</h3><p>在这里将会发布一些个人的技术感想和思考，谢谢关注！</p>]]></content>
     
     
+    
+    <tags>
+      
+      <tag>Hexo</tag>
+      
+      <tag>Fluid</tag>
+      
+    </tags>
     
   </entry>
   
