@@ -27,7 +27,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shuhuicoder.github.io/img/cpplogo.jpg">
 <meta property="article:published_time" content="2022-10-07T06:11:11.000Z">
-<meta property="article:modified_time" content="2022-10-07T06:27:45.299Z">
+<meta property="article:modified_time" content="2022-10-07T06:44:17.630Z">
 <meta property="article:author" content="ShuHui">
 <meta property="article:tag" content="技术">
 <meta property="article:tag" content="C&#x2F;C++">
@@ -210,7 +210,7 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/./ch20221007/20221007_0.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('/img/lightroom.jpg') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
@@ -293,7 +293,7 @@
               <p class="note note-info">
                 
                   
-                    本文最后更新于：7 分钟前
+                    本文最后更新于：5 分钟前
                   
                 
               </p>
@@ -812,13 +812,9 @@
 <li>为什么要使用智能指针：智能指针的作用是管理一个指针，因为存在申请的空间在函数结束时忘记释放，造成内存泄漏的情况。使用智能指针可以很大程度上避免这个问题，因为智能指针就是一个类，当超出了类的作用域时，类会自动调用析构函数，自动释放资源。</li>
 <li>四种指针各自特性<br>（1）auto_ptr<br>   auto指针存在的问题是，两个智能指针同时指向一块内存，就会两次释放同一块资源，自然报错。<br>（2）unique_ptr<br>   unique指针规定一个智能指针独占一块内存资源。当两个智能指针同时指向一块内存，编译报错。<br>   实现原理：将拷贝构造函数和赋值拷贝构造函数申明为private或delete。不允许拷贝构造函数和赋值操作符，但是支持移动构造函数，通过std:move把一个对象指针变成右值之后可以移动给另一个unique_ptr<br>（3）shared_ptr<br>   共享指针可以实现多个智能指针指向相同对象，该对象和其相关资源会在引用为0时被销毁释放。<br>   实现原理：有一个引用计数的指针类型变量，专门用于引用计数，使用拷贝构造函数和赋值拷贝构造函数时，引用计数加1，当引用计数为0时，释放资源。<br>注意：weak_ptr、shared_ptr存在一个问题，当两个shared_ptr指针相互引用时，那么这两个指针的引用计数不会下降为0，资源得不到释放。因此引入weak_ptr，weak_ptr是弱引用，weak_ptr的构造和析构不会引起引用计数的增加或减少。</li>
 </ol>
-<h3 id="54-weak-ptr-能不能知道对象计数为-0，为什么？"><a href="#54-weak-ptr-能不能知道对象计数为-0，为什么？" class="headerlink" title="54. weak_ptr 能不能知道对象计数为 0，为什么？"></a>54. weak_ptr 能不能知道对象计数为 0，为什么？</h3><pre><code class="hljs">不能。
-weak_ptr是一种不控制对象生命周期的智能指针，它指向一个shared_ptr管理的对象。进行该对象管理的是那个引用的shared_ptr。weak_ptr只是提供了对管理 对象的一个访问手段。weak_ptr设计的目的只是为了配合shared_ptr而引入的一种智能指针，配合shared_ptr工作，它只可以从一个shared_ptr或者另一个weak_ptr对象构造，它的构造和析构不会引起计数的增加或减少。
-</code></pre>
-<h3 id="55-weak-ptr-如何解决-shared-ptr-的循环引用问题？"><a href="#55-weak-ptr-如何解决-shared-ptr-的循环引用问题？" class="headerlink" title="55. weak_ptr 如何解决 shared_ptr 的循环引用问题？"></a>55. weak_ptr 如何解决 shared_ptr 的循环引用问题？</h3><pre><code class="hljs">为了解决循环引用导致的内存泄漏，引入了弱指针weak_ptr，weak_ptr的构造函数不会修改引用计数的值，从而不会对对象的内存进行管理，其类似一个普通指针，不会指向引用计数的共享内存，但是可以检测到所管理的对象是否已经被释放，从而避免非法访问。
-</code></pre>
-<h3 id="56-share-ptr-怎么知道跟它共享对象的指针释放了"><a href="#56-share-ptr-怎么知道跟它共享对象的指针释放了" class="headerlink" title="56. share_ptr 怎么知道跟它共享对象的指针释放了"></a>56. share_ptr 怎么知道跟它共享对象的指针释放了</h3><pre><code class="hljs">多个shared_ptr对象可以同时托管一个指针，系统会维护一个托管计数。当无shared_ptr托管该指针时，delete该指针。
-</code></pre>
+<h3 id="54-weak-ptr-能不能知道对象计数为-0，为什么？"><a href="#54-weak-ptr-能不能知道对象计数为-0，为什么？" class="headerlink" title="54. weak_ptr 能不能知道对象计数为 0，为什么？"></a>54. weak_ptr 能不能知道对象计数为 0，为什么？</h3><p>不能。<br>weak_ptr是一种不控制对象生命周期的智能指针，它指向一个shared_ptr管理的对象。进行该对象管理的是那个引用的shared_ptr。weak_ptr只是提供了对管理 对象的一个访问手段。weak_ptr设计的目的只是为了配合shared_ptr而引入的一种智能指针，配合shared_ptr工作，它只可以从一个shared_ptr或者另一个weak_ptr对象构造，它的构造和析构不会引起计数的增加或减少。</p>
+<h3 id="55-weak-ptr-如何解决-shared-ptr-的循环引用问题？"><a href="#55-weak-ptr-如何解决-shared-ptr-的循环引用问题？" class="headerlink" title="55. weak_ptr 如何解决 shared_ptr 的循环引用问题？"></a>55. weak_ptr 如何解决 shared_ptr 的循环引用问题？</h3><p>为了解决循环引用导致的内存泄漏，引入了弱指针weak_ptr，weak_ptr的构造函数不会修改引用计数的值，从而不会对对象的内存进行管理，其类似一个普通指针，不会指向引用计数的共享内存，但是可以检测到所管理的对象是否已经被释放，从而避免非法访问。</p>
+<h3 id="56-share-ptr-怎么知道跟它共享对象的指针释放了"><a href="#56-share-ptr-怎么知道跟它共享对象的指针释放了" class="headerlink" title="56. share_ptr 怎么知道跟它共享对象的指针释放了"></a>56. share_ptr 怎么知道跟它共享对象的指针释放了</h3><p>多个shared_ptr对象可以同时托管一个指针，系统会维护一个托管计数。当无shared_ptr托管该指针时，delete该指针。</p>
 <h3 id="57-智能指针有没有内存泄露的情况"><a href="#57-智能指针有没有内存泄露的情况" class="headerlink" title="57. 智能指针有没有内存泄露的情况"></a>57. 智能指针有没有内存泄露的情况</h3><p>智能指针有内存泄露的情况发生。</p>
 <ol>
 <li>智能指针发生内存泄露的情况<br>当两个对象同时使用一个shared_ptr成员变量指向对方，会造成循环引用，使引用计数失效，从而导致内存泄露。</li>
@@ -869,6 +865,27 @@ weak_ptr是一种不控制对象生命周期的智能指针，它指向一个sha
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%8A%80%E6%9C%AF/" class="category-chain-item">技术</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
     <div class="post-meta">
