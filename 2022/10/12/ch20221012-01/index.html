@@ -18,24 +18,25 @@
   <meta name="author" content="shuhui">
   <meta name="keywords" content="Blog, 博客, 主页, 技术">
   
-    <meta name="description" content="你好，欢迎来到我的博客在这里将会发布一些个人的技术感想和思考，谢谢关注">
+    <meta name="description" content="深信服手撕代码，要求实现一个函数复制一个复杂链表，复杂链表中有一个随机指针可以指向任意节点或者nullptr；leetcode以及剑指offer中有这一题，leetcode, 剑指offer 1234567struct ComplexListNode&amp;#123;    int val;    ComplexListNode *next;    ComplexListNode *random;">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello Wolrd">
-<meta property="og:url" content="https://shuhuicoder.github.io/2021/06/22/Hello-Wolrd/index.html">
+<meta property="og:title" content="深信服面试手写代码：复杂链表的复制">
+<meta property="og:url" content="https://shuhuicoder.github.io/2022/10/12/ch20221012-01/index.html">
 <meta property="og:site_name" content="ShuHui&#39;s Blog">
-<meta property="og:description" content="你好，欢迎来到我的博客在这里将会发布一些个人的技术感想和思考，谢谢关注">
+<meta property="og:description" content="深信服手撕代码，要求实现一个函数复制一个复杂链表，复杂链表中有一个随机指针可以指向任意节点或者nullptr；leetcode以及剑指offer中有这一题，leetcode, 剑指offer 1234567struct ComplexListNode&amp;#123;    int val;    ComplexListNode *next;    ComplexListNode *random;">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://shuhuicoder.github.io/img/back.jpg">
-<meta property="article:published_time" content="2021-06-22T14:30:23.000Z">
-<meta property="article:modified_time" content="2022-10-07T07:10:13.266Z">
+<meta property="og:image" content="https://shuhuicoder.github.io/img/cpplogo.jpg">
+<meta property="article:published_time" content="2022-10-12T03:51:50.000Z">
+<meta property="article:modified_time" content="2022-10-12T09:12:15.825Z">
 <meta property="article:author" content="ShuHui">
-<meta property="article:tag" content="日常">
+<meta property="article:tag" content="技术">
+<meta property="article:tag" content="C++， 面试">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://shuhuicoder.github.io/img/back.jpg">
+<meta name="twitter:image" content="https://shuhuicoder.github.io/img/cpplogo.jpg">
   
   
   
-  <title>Hello Wolrd - ShuHui&#39;s Blog</title>
+  <title>深信服面试手写代码：复杂链表的复制 - ShuHui&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -209,13 +210,13 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+     style="background: url('/img/thumb_1680_0_20220916125813851.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle">Hello Wolrd</span>
+            <span id="subtitle">深信服面试手写代码：复杂链表的复制</span>
           
         </div>
 
@@ -226,8 +227,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2021-06-22 22:30" pubdate>
-          2021年6月22日 晚上
+        <time datetime="2022-10-12 11:51" pubdate>
+          2022年10月12日 中午
         </time>
       </span>
     
@@ -238,7 +239,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          35 字
+          2k 字
         
       </span>
     
@@ -249,7 +250,7 @@
         
         
         
-          1 分钟
+          17 分钟
         
       </span>
     
@@ -287,12 +288,12 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Hello Wolrd</h1>
+            <h1 style="display: none">深信服面试手写代码：复杂链表的复制</h1>
             
               <p class="note note-info">
                 
                   
-                    本文最后更新于：2 个月前
+                    本文最后更新于：1 个月前
                   
                 
               </p>
@@ -300,8 +301,16 @@
             
               <div class="markdown-body">
                 
-                <h3 id="你好，欢迎来到我的博客"><a href="#你好，欢迎来到我的博客" class="headerlink" title="你好，欢迎来到我的博客"></a>你好，欢迎来到我的博客</h3><p>在这里将会发布一些个人的技术感想和思考，谢谢关注</p>
+                <p>深信服手撕代码，要求实现一个函数复制一个复杂链表，复杂链表中有一个随机指针可以指向任意节点或者nullptr；<br>leetcode以及剑指offer中有这一题，<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/copy-list-with-random-pointer/">leetcode</a>, <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/fu-za-lian-biao-de-fu-zhi-lcof/">剑指offer</a></p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-keyword">struct</span> <span class="hljs-title class_">ComplexListNode</span><br>&#123;<br>    <span class="hljs-type">int</span> val;<br>    ComplexListNode *next;<br>    ComplexListNode *random;<br>    <span class="hljs-built_in">ComplexListNode</span>(<span class="hljs-type">int</span> x) : <span class="hljs-built_in">val</span>(x), <span class="hljs-built_in">next</span>(<span class="hljs-literal">nullptr</span>), <span class="hljs-built_in">random</span>(<span class="hljs-literal">nullptr</span>) &#123;&#125;<br>&#125;;<br></code></pre></td></tr></table></figure>
 
+<h3 id="1-构建复杂链表"><a href="#1-构建复杂链表" class="headerlink" title="1. 构建复杂链表"></a>1. 构建复杂链表</h3><p>首先需要知道如何构建复杂链表，当然在做题和面试时，只需要实现复制链表的函数即可。<br>这里的思路是分两次进行，首先遍历数组，取元素第一个值来构建单向链表, 同时构建一个数组tmp来存放每一个节点；然后再次遍历数组，取元素第二个值作为下标索引取出tmp中的节点，并将当前节点的随机指针指向该节点，当前节点不断后移；</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">ComplexListNode *<span class="hljs-title">constructComplexList</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; &amp;nums)</span></span><br><span class="hljs-function"></span>&#123;<br>    ComplexListNode *dummy = <span class="hljs-keyword">new</span> <span class="hljs-built_in">ComplexListNode</span>(<span class="hljs-number">0</span>);<br>    ComplexListNode *cur = dummy;<br>    vector&lt;ComplexListNode *&gt; temp;<br>    <span class="hljs-keyword">for</span> (vector&lt;<span class="hljs-type">int</span>&gt; &amp;n : nums)<br>    &#123;<br>        cur-&gt;next = <span class="hljs-keyword">new</span> <span class="hljs-built_in">ComplexListNode</span>(n[<span class="hljs-number">0</span>]);<br>        cur = cur-&gt;next;<br>        temp.<span class="hljs-built_in">push_back</span>(cur);<br>    &#125;<br>    cur = dummy-&gt;next;<br>    <span class="hljs-keyword">for</span> (vector&lt;<span class="hljs-type">int</span>&gt; &amp;n : nums)<br>    &#123;<br>        cur-&gt;random = temp[n[<span class="hljs-number">1</span>]];<br>        cur = cur-&gt;next;<br>    &#125;<br>    ComplexListNode *head = dummy-&gt;next;<br>    head-&gt;random = <span class="hljs-literal">nullptr</span>;<br>    <span class="hljs-keyword">delete</span> dummy;<br>    <span class="hljs-keyword">return</span> head;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>或者使用unordered_map来存储已构建的节点也可以</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">ComplexListNode *<span class="hljs-title">constructComplexList_2</span><span class="hljs-params">(vector&lt;vector&lt;<span class="hljs-type">int</span>&gt;&gt; &amp;nums)</span></span><br><span class="hljs-function"></span>&#123;<br>    ComplexListNode *dummy = <span class="hljs-keyword">new</span> <span class="hljs-built_in">ComplexListNode</span>(<span class="hljs-number">0</span>);<br>    ComplexListNode *cur = dummy;<br>    unordered_map&lt;<span class="hljs-type">int</span>, ComplexListNode *&gt; mp;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> i = <span class="hljs-number">0</span>; i &lt; nums.<span class="hljs-built_in">size</span>(); i++)<br>    &#123;<br>        ComplexListNode *node = <span class="hljs-keyword">new</span> <span class="hljs-built_in">ComplexListNode</span>(nums[i][<span class="hljs-number">0</span>]);<br>        mp[i] = node;<br>        cur-&gt;next = node;<br>        cur = cur-&gt;next;<br>    &#125;<br>    cur = dummy-&gt;next;<br>    <span class="hljs-keyword">for</span> (vector&lt;<span class="hljs-type">int</span>&gt; &amp;n : nums)<br>    &#123;<br>        cur-&gt;random = mp[n[<span class="hljs-number">1</span>]];<br>        cur = cur-&gt;next;<br>    &#125;<br>    ComplexListNode *head = dummy-&gt;next;<br>    head-&gt;random = <span class="hljs-literal">nullptr</span>;<br>    <span class="hljs-keyword">delete</span> dummy;<br>    <span class="hljs-keyword">return</span> head;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-复制复杂链表"><a href="#2-复制复杂链表" class="headerlink" title="2. 复制复杂链表"></a>2. 复制复杂链表</h3><p>在这里复制复杂链表应该使用深拷贝的原理，即对于原链表的每一个节点都重新创建并开辟出一块新空间，而不是简单的指向原来的节点；<br>思路：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-function">ComplexListNode *<span class="hljs-title">copyComplexList</span><span class="hljs-params">(ComplexListNode *head)</span></span><br><span class="hljs-function"></span>&#123;<br>    unordered_map&lt;ComplexListNode *, ComplexListNode *&gt; mp;<br>    ComplexListNode *cur = head;<br>    <span class="hljs-keyword">while</span> (cur != <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        mp[cur] = <span class="hljs-keyword">new</span> <span class="hljs-built_in">ComplexListNode</span>(cur-&gt;val);<br>        cur = cur-&gt;next;<br>    &#125;<br>    cur = head;<br>    <span class="hljs-keyword">while</span> (cur != <span class="hljs-literal">nullptr</span>)<br>    &#123;<br>        mp[cur]-&gt;next = mp[cur-&gt;next];<br>        mp[cur]-&gt;random = mp[cur-&gt;random];<br>        cur = cur-&gt;next;<br>    &#125;<br>    <span class="hljs-keyword">return</span> head;<br>&#125;<br></code></pre></td></tr></table></figure>
                 
               </div>
             
@@ -334,7 +343,9 @@
     <div class="post-meta">
       <i class="iconfont icon-tags"></i>
       
-        <a href="/tags/%E6%97%A5%E5%B8%B8/">#日常</a>
+        <a href="/tags/%E6%8A%80%E6%9C%AF/">#技术</a>
+      
+        <a href="/tags/C-%EF%BC%8C-%E9%9D%A2%E8%AF%95/">#C++， 面试</a>
       
     </div>
   
@@ -346,8 +357,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Hello Wolrd</div>
-      <div>https://shuhuicoder.github.io/2021/06/22/Hello-Wolrd/</div>
+      <div>深信服面试手写代码：复杂链表的复制</div>
+      <div>https://shuhuicoder.github.io/2022/10/12/ch20221012-01/</div>
     </div>
     <div class="license-meta">
       
@@ -359,7 +370,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2021年6月22日</div>
+          <div>2022年10月12日</div>
         </div>
       
       
@@ -391,15 +402,21 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2022/09/22/ch20220921/" title="20220921_中移苏州面试总结">
+                      <a href="/2022/10/12/ch20221012/" title="C++实现单/双链表的反转以及复制">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">20220921_中移苏州面试总结</span>
+                        <span class="hidden-mobile">C++实现单/双链表的反转以及复制</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2022/10/09/ch20221009/" title="深入理解C++中的强制类型转换">
+                        <span class="hidden-mobile">深入理解C++中的强制类型转换</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
