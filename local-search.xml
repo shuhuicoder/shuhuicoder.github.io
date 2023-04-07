@@ -4,6 +4,35 @@
   
   
   <entry>
+    <title>在Visual Studio 2019中的添加及配置jsoncpp</title>
+    <link href="/2023/04/05/ch20230405/"/>
+    <url>/2023/04/05/ch20230405/</url>
+    
+    <content type="html"><![CDATA[<p>这里是Windows环境下在Visual Studio 2019中配置jsoncpp的方法以及jsoncpp的基本使用做一个记录。</p><h3 id="1-Visual-Studio-2019添加和配置jsoncpp"><a href="#1-Visual-Studio-2019添加和配置jsoncpp" class="headerlink" title="1. Visual Studio 2019添加和配置jsoncpp"></a>1. Visual Studio 2019添加和配置jsoncpp</h3><p>jsoncpp的下载地址[<a href="https://sourceforge.net/projects/jsoncpp/]%EF%BC%8C%E6%9C%AC%E6%96%87%E4%B8%AD%E6%89%80%E4%BD%BF%E7%94%A8%E7%9A%84%E6%98%AF0.5.0%E7%89%88%E6%9C%AC%E3%80%82%E4%BD%BF%E7%94%A8jsoncpp%E4%B9%9F%E6%9C%89%E4%B8%A4%E7%A7%8D%E6%96%B9%E5%BC%8F%EF%BC%8C%E4%B8%80%E7%A7%8D%E6%98%AF%E5%9C%A8%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%8C%85%E5%90%ABcpp%E5%92%8Ch%E6%96%87%E4%BB%B6%EF%BC%8C%E7%AC%AC%E4%BA%8C%E7%A7%8D%E5%88%99%E6%98%AF%E4%BD%BF%E7%94%A8jsoncpp%E7%94%9F%E6%88%90%E7%9A%84lib%E6%96%87%E4%BB%B6%E3%80%82">https://sourceforge.net/projects/jsoncpp/]，本文中所使用的是0.5.0版本。使用jsoncpp也有两种方式，一种是在项目中包含cpp和h文件，第二种则是使用jsoncpp生成的lib文件。</a></p><h4 id="1-1-在项目种包含cpp和h文件"><a href="#1-1-在项目种包含cpp和h文件" class="headerlink" title="1.1 在项目种包含cpp和h文件"></a>1.1 在项目种包含cpp和h文件</h4><ol><li>解压下载的Jsoncpp文件，把jsoncpp-src-0.5.0文件拷贝到工程目录下；</li><li>将<code>jsoncpp-src-0.5.0\jsoncpp-src-0.5.0\include\json</code>和<code>jsoncpp-src-0.5.0\jsoncpp-src-0.5.0\src\lib_json</code>目录里的文件包含到VS工程中;<br> 具体地，在 菜单栏-&gt;项目 选项中，选择显示所有文件，然后在项目文件夹<code>jsoncpp-src-0.5.0\jsoncpp-src-0.5.0\include\json</code>和<code>jsoncpp-src-0.5.0\jsoncpp-src-0.5.0\src\lib_json</code>上右击，选择“包含在项目中”。</li><li>在VS工程的属性C&#x2F;C++下General（常规）中Additional Include Directories（附加包含目录）包含头文件目录.\jsoncpp-src-0.5.0\include。配置路径为：属性管理器 -&gt; C&#x2F;C++ -&gt; 常规 -&gt; 附加包含目录：<code>.\jsoncpp-src-0.5.0\include</code>。</li><li>在使用的cpp文件中包含json头文件即可，如：#include “json&#x2F;json.h”。</li><li>将json_reader.cpp、json_value.cpp和json_writer.cpp三个文件的Precompiled Header（预编译头）属性设置为Not Using Precompiled Headers（不使用预编译头），否则编译会出现错误。配置路径为：属性管理器 -&gt; C&#x2F;C++ -&gt; 预编译头 -&gt; 预编译头：不使用预编译头。</li></ol><h4 id="1-2-使用jsonCPP生成的静态lib库文件"><a href="#1-2-使用jsonCPP生成的静态lib库文件" class="headerlink" title="1.2 使用jsonCPP生成的静态lib库文件"></a>1.2 使用jsonCPP生成的静态lib库文件</h4><ol><li>解压下载的jsoncpp文件；</li><li>在jsoncpp-src-0.5.0&#x2F;makefiles&#x2F;vs71目录里找到jsoncpp.sln，使用visual studio打开，注意，本文所使用的是visual studio2019版本，在打开时会要求进行兼容选项，确认兼容升级即可；</li><li>生成解决方案，然后便可以在&#96;&#96;&#96;\jsoncpp-src-0.5.0\build\vs71\debug\lib_json&#96;&#96;中找到lib文件json_vc71_libmtd.lib，需要注意的是，如果选择的是release模式，则在release目录下存在生成的json_vc71_libmt.lib文件，文件名是不一样的！！！</li><li>新建一个空白测试项目，然后在项目中的连接器中链接lib文件，具体操作路径为：项目属性管理器 -&gt; 链接器 -&gt; 输入 -&gt; 附加依赖项 -&gt; lib的路径；</li><li>包含jsoncpp的include目录，其中包含.h头文件，具体操作路径为：属性管理器 -&gt; C&#x2F;C++ -&gt; 附加包含目录 -&gt; 编辑 -&gt; 添加路径<code>\jsoncpp-src-0.5.0\include</code>即可；</li><li>在测试cpp文件中，添加<code>#pragma comment(lib,&quot;json_vc71_libmtd.lib&quot;)</code>，并包含头文件<code>#include &quot;json/json.h&quot;</code>即可正常使用；</li></ol><p>NOTE：在测试运行时，需要在测试项目中使用与libku生成时使用一致的运行库，具体查看和操作路径为：属性管理器 -&gt; C&#x2F;C++ -&gt; 代码生成 -&gt; 运行库 -&gt; 多线程调试(&#x2F;MTd); 其中4个选项分别对应的含义如下：</p><ul><li>多线程调试Dll (&#x2F;MDd) 对应的是MD_DynamicDebug</li><li>多线程Dll (&#x2F;MD) 对应的是MD_DynamicRelease</li><li>多线程(&#x2F;MT) 对应的是MD_StaticRelease</li><li>多线程(&#x2F;MTd)对应的是MD_StaticDebug</li></ul><p>以下给出测试cpp代码, 该代码同样适用于1.1小节中的情况，只需注释或删除掉<code>#pragma comment(lib,&quot;json_vc71_libmtd.lib&quot;)</code>即可。</p><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs cpp"><span class="hljs-meta">#<span class="hljs-keyword">pragma</span> comment(lib,<span class="hljs-string">&quot;json_vc71_libmtd.lib&quot;</span>)</span><br><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;iostream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;string&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;fstream&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&quot;json/json.h&quot;</span></span><br><br><span class="hljs-keyword">using</span> <span class="hljs-keyword">namespace</span> std;<br><br><span class="hljs-function"><span class="hljs-type">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-type">const</span> <span class="hljs-type">char</span>* str = <span class="hljs-string">&quot;&#123;\&quot;uploadid\&quot;: \&quot;UP000000\&quot;,\&quot;code\&quot;: 100,\&quot;msg\&quot;: \&quot;hello world\&quot;,\&quot;files\&quot;: \&quot;a.txt\&quot;&#125;&quot;</span>;<br><br>    Json::Reader reader;<br>    Json::Value root;<br>    <span class="hljs-keyword">if</span> (reader.<span class="hljs-built_in">parse</span>(str, root))  <span class="hljs-comment">// reader将Json字符串解析到root，root将包含Json里所有子元素  </span><br>    &#123;<br>        std::string upload_id = root[<span class="hljs-string">&quot;uploadid&quot;</span>].<span class="hljs-built_in">asString</span>();  <span class="hljs-comment">// 访问节点，upload_id = &quot;UP000000&quot;  </span><br><br>        <span class="hljs-type">int</span> code = root[<span class="hljs-string">&quot;code&quot;</span>].<span class="hljs-built_in">asInt</span>();    <span class="hljs-comment">// 访问节点，code = 100 </span><br>        std::string msg = root[<span class="hljs-string">&quot;msg&quot;</span>].<span class="hljs-built_in">asString</span>();<br>        std::string files = root[<span class="hljs-string">&quot;files&quot;</span>].<span class="hljs-built_in">asString</span>();<br>        cout &lt;&lt; upload_id &lt;&lt; <span class="hljs-string">&quot; : &quot;</span> &lt;&lt; code &lt;&lt; endl;<br>        cout &lt;&lt; msg &lt;&lt; <span class="hljs-string">&quot; : &quot;</span> &lt;&lt; files &lt;&lt; endl;<br>    &#125;<br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure><p>如有其他问题欢迎留言或私信讨论，谢谢。</p><h3 id="Inference"><a href="#Inference" class="headerlink" title="Inference"></a>Inference</h3><p>[1]<a href="https://blog.csdn.net/qq_40178343/article/details/112387810">https://blog.csdn.net/qq_40178343/article/details/112387810</a><br>[2]<a href="https://www.cnblogs.com/liaocheng/p/4243731.html">https://www.cnblogs.com/liaocheng/p/4243731.html</a><br>[3]<a href="https://blog.csdn.net/smalbig/article/details/113465183">https://blog.csdn.net/smalbig/article/details/113465183</a></p>]]></content>
+    
+    
+    <categories>
+      
+      <category>技术</category>
+      
+    </categories>
+    
+    
+    <tags>
+      
+      <tag>技术</tag>
+      
+      <tag>C++</tag>
+      
+      <tag>Windows</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Windows环境中C++遍历目录及文件</title>
     <link href="/2023/03/30/ch20230330/"/>
     <url>/2023/03/30/ch20230330/</url>
@@ -23,8 +52,6 @@
       <tag>技术</tag>
       
       <tag>C++</tag>
-      
-      <tag>Linux</tag>
       
       <tag>Windows</tag>
       
