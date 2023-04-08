@@ -20,8 +20,8 @@
   
     <meta name="description" content="ShuHui的个人主页">
 <meta property="og:type" content="website">
-<meta property="og:title" content="归档">
-<meta property="og:url" content="https://shuhuicoder.github.io/archives/2023/04/index.html">
+<meta property="og:title" content="ShuHui&#39;s Blog">
+<meta property="og:url" content="https://shuhuicoder.github.io/page/2/index.html">
 <meta property="og:site_name" content="ShuHui&#39;s Blog">
 <meta property="og:description" content="ShuHui的个人主页">
 <meta property="og:locale" content="zh_CN">
@@ -31,7 +31,7 @@
   
   
   
-  <title>归档 - ShuHui&#39;s Blog</title>
+  <title>ShuHui&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -100,7 +100,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 60vh;">
+<div class="header-inner" style="height: 100vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -199,19 +199,23 @@
   
 
 <div id="banner" class="banner" parallax=true
-     style="background: url('/images/qz2xmd.jpg') no-repeat center center; background-size: cover;">
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
   <div class="full-bg-img">
     <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle">归档</span>
+            <span id="subtitle" data-typed-text="你好，欢迎来到ShuHui的博客"></span>
           
         </div>
 
         
       </div>
 
+      
+        <div class="scroll-down-bar">
+          <i class="iconfont icon-arrowdown"></i>
+        </div>
       
     </div>
   </div>
@@ -225,36 +229,88 @@
     
       <div class="container nopadding-x-md">
         <div id="board"
-          >
+          style="margin-top: 0">
           
           <div class="container">
             <div class="row">
               <div class="col-12 col-md-10 m-auto">
                 
 
-<div class="list-group">
-  <p class="h4">共计 11 篇文章</p>
-  <hr>
-  
-  
+
+  <div class="row mx-auto index-card">
     
+    
+      <div class="col-12 col-md-4 m-auto index-img">
+        <a href="/2021/06/22/Hello-Wolrd/" target="_self">
+          <img src="/img/back.jpg" srcset="/img/loading.gif" lazyload alt="Hello Wolrd">
+        </a>
+      </div>
+    
+    <article class="col-12 col-md-8 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/06/22/Hello-Wolrd/" target="_self">
+          Hello Wolrd
+        </a>
+      </h1>
+
       
-      <p class="h5">2023</p>
-    
-    <a href="/2023/04/08/ch20230408/" class="list-group-item list-group-item-action">
-      <time>04-08</time>
-      <div class="list-group-item-title">一个利用C11实现的简单计算器应用</div>
-    </a>
+      <a class="index-excerpt " href="/2021/06/22/Hello-Wolrd/" target="_self">
+        <div>
+          你好，欢迎来到我的博客在这里将会发布一些个人的技术感想和思考，谢谢关注
+        </div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-06-22 22:30" pubdate>
+              2021-06-22
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3 d-flex align-items-center">
+            <i class="iconfont icon-category"></i>
+            
+
+<span class="category-chains">
+  
   
     
-    <a href="/2023/04/05/ch20230405/" class="list-group-item list-group-item-action">
-      <time>04-05</time>
-      <div class="list-group-item-title">在Visual Studio 2019中的添加及配置jsoncpp</div>
-    </a>
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%97%A5%E5%B8%B8/" class="category-chain-item">日常</a>
   
-</div>
+  
+
+      </span>
+    
+  
+</span>
+
+          </div>
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/%E6%97%A5%E5%B8%B8/">#日常</a>
+            
+          </div>
+        
+      </div>
+    </article>
+  </div>
 
 
+
+  <nav aria-label="navigation">
+    <span class="pagination" id="pagination">
+      <a class="extend prev" rel="prev" href="/"><i class="iconfont icon-arrowleft"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    </span>
+  </nav>
 
 
 
@@ -331,6 +387,21 @@
 <script  src="/js/events.js" ></script>
 <script  src="/js/plugins.js" ></script>
 
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
 
 
 
