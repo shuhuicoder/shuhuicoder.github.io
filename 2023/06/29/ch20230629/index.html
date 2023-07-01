@@ -18,16 +18,16 @@
   <meta name="author" content="shuhui">
   <meta name="keywords" content="Blog, 博客, 主页, 技术">
   
-    <meta name="description" content="1. 基础知识由于现代CPU的累加器一次能够装载至少4字节(在32位机环境下)，即一个整数。该4字节在内存中的排列顺序便会影响到其被累加器装载时所生成的整数值，这就是字节序问题。字节序分为大端字节序（big endian）和小端字节序（little endian）。  大端字节序：  一个整数的高位字节(23-31 bit)存储在内存的低地址处，而低位字节(0-7 bit)存储在内存的高地址处；">
+    <meta name="description" content="1. 关于socket地址1.1 通用socket地址socket网络编程中表示socket地址的是结构体sockaddr； 1234567#include &lt;bits&#x2F;socket.h&gt;struct sockaddr&amp;#123;    sa_family_t safamily;       &#x2F;&#x2F; 地址族类型sa_family_t    char sa_data[14];">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Linux网络服务器编程01--关于主机字节序和网络字节序">
-<meta property="og:url" content="https://shuhuicoder.github.io/2023/04/13/ch20230413/index.html">
+<meta property="og:title" content="Linux网络服务器编程02--关于socket地址及API">
+<meta property="og:url" content="https://shuhuicoder.github.io/2023/06/29/ch20230629/index.html">
 <meta property="og:site_name" content="ShuHui&#39;s Blog">
-<meta property="og:description" content="1. 基础知识由于现代CPU的累加器一次能够装载至少4字节(在32位机环境下)，即一个整数。该4字节在内存中的排列顺序便会影响到其被累加器装载时所生成的整数值，这就是字节序问题。字节序分为大端字节序（big endian）和小端字节序（little endian）。  大端字节序：  一个整数的高位字节(23-31 bit)存储在内存的低地址处，而低位字节(0-7 bit)存储在内存的高地址处；">
+<meta property="og:description" content="1. 关于socket地址1.1 通用socket地址socket网络编程中表示socket地址的是结构体sockaddr； 1234567#include &lt;bits&#x2F;socket.h&gt;struct sockaddr&amp;#123;    sa_family_t safamily;       &#x2F;&#x2F; 地址族类型sa_family_t    char sa_data[14];">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shuhuicoder.github.io/images/c_logo.jpg">
-<meta property="article:published_time" content="2023-04-13T07:16:47.000Z">
-<meta property="article:modified_time" content="2023-06-30T01:45:24.963Z">
+<meta property="article:published_time" content="2023-06-29T15:02:40.000Z">
+<meta property="article:modified_time" content="2023-06-30T01:53:17.062Z">
 <meta property="article:author" content="ShuHui">
 <meta property="article:tag" content="技术">
 <meta property="article:tag" content="C语言">
@@ -38,7 +38,7 @@
   
   
   
-  <title>Linux网络服务器编程01--关于主机字节序和网络字节序 - ShuHui&#39;s Blog</title>
+  <title>Linux网络服务器编程02--关于socket地址及API - ShuHui&#39;s Blog</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -218,7 +218,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle">Linux网络服务器编程01--关于主机字节序和网络字节序</span>
+            <span id="subtitle">Linux网络服务器编程02--关于socket地址及API</span>
           
         </div>
 
@@ -229,8 +229,8 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-04-13 15:16" pubdate>
-          2023年4月13日 下午
+        <time datetime="2023-06-29 23:02" pubdate>
+          2023年6月29日 晚上
         </time>
       </span>
     
@@ -241,7 +241,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          1.5k 字
+          2.7k 字
         
       </span>
     
@@ -252,7 +252,7 @@
         
         
         
-          13 分钟
+          23 分钟
         
       </span>
     
@@ -290,7 +290,7 @@
         <div id="board">
           <article class="post-content mx-auto">
             <!-- SEO header -->
-            <h1 style="display: none">Linux网络服务器编程01--关于主机字节序和网络字节序</h1>
+            <h1 style="display: none">Linux网络服务器编程02--关于socket地址及API</h1>
             
               <p class="note note-info">
                 
@@ -303,16 +303,29 @@
             
               <div class="markdown-body">
                 
-                <h3 id="1-基础知识"><a href="#1-基础知识" class="headerlink" title="1. 基础知识"></a>1. 基础知识</h3><p>由于现代CPU的累加器一次能够装载至少4字节(在32位机环境下)，即一个整数。该4字节在内存中的排列顺序便会影响到其被累加器装载时所生成的整数值，这就是字节序问题。字节序分为大端字节序（big endian）和小端字节序（little endian）。</p>
-<ul>
-<li>大端字节序：<br>  一个整数的高位字节(23-31 bit)存储在内存的低地址处，而低位字节(0-7 bit)存储在内存的高地址处；</li>
-<li>小端字节序：<br>  指整数的高位字节存储在内存的高地址处，而低位字节存储在内存的低地址处。<br>由于现代PC大多采用小端字节序，因此小端字节序也被成为“主机字节序”。当格式化的数据在两台使用不同字节序的主机之间直接传递时，接收端不进行转换的话必然会导致错误解释。因此，解决问题的方法是：发送端总是将要发送的数据转化成大端字节序数据后再进行发送，而接收端由于知道发送方总是采用大端字节序，所以接收端便可以根据自身所采用的字节序来决定是否对收到的数据进行转换。因此，大端字节序也被称为“网络字节序”，其为所有接收数据的主机提供了一个正确解析收到的格式化数据的保证。<br>NOTE：即便是同一台机器上的两个进程之间（比如一个是C语言程序，另一个是Java语言程序）通信，也需要考虑字节序问题，例如Java虚拟机便是采用大端字节序。</li>
-</ul>
-<h3 id="2-API函数"><a href="#2-API函数" class="headerlink" title="2. API函数"></a>2. API函数</h3><p>Linux环境中提供了如下4个函数来完成主机字节序和网络字节序之间的转换。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;netinet/in.h&gt;</span></span><br><br><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> <span class="hljs-title function_">htonl</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> hostlong)</span>;<br><br><span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> <span class="hljs-type">int</span> <span class="hljs-title function_">htons</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> <span class="hljs-type">int</span> hostshort)</span>;<br><br><span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> <span class="hljs-title function_">ntohl</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> netlong)</span>;<br><br><span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> <span class="hljs-type">int</span> <span class="hljs-title function_">ntohs</span><span class="hljs-params">(<span class="hljs-type">unsigned</span> <span class="hljs-type">short</span> <span class="hljs-type">int</span> netshort)</span>;<br></code></pre></td></tr></table></figure>
-<p>上述API函数含义很明确，例如 htonl 即表示“host to network long”，即将长整型(32 bit)的主机字节序转换成网络字节序数据。<br>在4个函数中，长整型函数通常用来转换IP地址，而短整型则用来转换端口号。当然不限于此，任何格式化数据通过网络传输时，都应该使用这些函数来转换字节序。</p>
-<h3 id="3-判断机器字节序"><a href="#3-判断机器字节序" class="headerlink" title="3. 判断机器字节序"></a>3. 判断机器字节序</h3><p>如下代码可以用来检查所使用机器的字节序：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><br><span class="hljs-type">void</span> <span class="hljs-title function_">byteorder</span><span class="hljs-params">()</span><br>&#123;<br>	<span class="hljs-class"><span class="hljs-keyword">union</span>&#123;</span><br>		<span class="hljs-type">short</span> value;<br>		<span class="hljs-type">char</span> union_bytes[<span class="hljs-keyword">sizeof</span>(<span class="hljs-type">short</span>)];<br>	&#125;test;<br>	<br>	test.value = <span class="hljs-number">0x0102</span>;<br>	<br>	<span class="hljs-keyword">if</span>((test.union_bytes[<span class="hljs-number">0</span>] == <span class="hljs-number">1</span>) &amp;&amp; (test.union_bytes[<span class="hljs-number">1</span>] == <span class="hljs-number">2</span>))<br>	&#123;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Big endian!\n&quot;</span>);<br>	&#125;<br>	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>((test.union_bytes[<span class="hljs-number">0</span>] == <span class="hljs-number">2</span>) &amp;&amp; (test.union_bytes[<span class="hljs-number">1</span>] == <span class="hljs-number">1</span>))<br>	&#123;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Little endian!\n&quot;</span>);<br>	&#125;<br>	<span class="hljs-keyword">else</span><br>	&#123;<br>		<span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;Unkown...\n&quot;</span>);<br>	&#125;<br>&#125;<br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br>	byteorder();<br>	<span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+                <h3 id="1-关于socket地址"><a href="#1-关于socket地址" class="headerlink" title="1. 关于socket地址"></a>1. 关于socket地址</h3><h4 id="1-1-通用socket地址"><a href="#1-1-通用socket地址" class="headerlink" title="1.1 通用socket地址"></a>1.1 通用socket地址</h4><p>socket网络编程中表示socket地址的是结构体sockaddr；</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;bits/socket.h&gt;</span></span><br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr</span></span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-type">sa_family_t</span> safamily;       <span class="hljs-comment">// 地址族类型sa_family_t</span><br>    <span class="hljs-type">char</span> sa_data[<span class="hljs-number">14</span>];           <span class="hljs-comment">// 用于存放socket地址值，仅14字节</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>由于14字节的sa_data无法容纳多数协议族的地址值，因此Linux定义了新的通用socket地址结构体；</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;bits/socket.h&gt;</span></span><br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_storage</span></span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-type">sa_family_t</span> sa_family;<br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">long</span> <span class="hljs-type">int</span> __ss_align;<br>    <span class="hljs-type">char</span> __ss_padding[<span class="hljs-number">128</span>-<span class="hljs-keyword">sizeof</span>(__ss_align)];<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>该结构体不仅提供了足够大的空间用于存放地址值，并且由于__ss_align的作用，其是内存对齐的。</p>
+<h4 id="1-2-专用socket地址"><a href="#1-2-专用socket地址" class="headerlink" title="1.2 专用socket地址"></a>1.2 专用socket地址</h4><p>由于通用的socket地址结构体不好用，在设置和获取IP地址和端口号时较为繁琐，因此Linux为各个协议族协议提供了专门的socket结构体。<br>Unix本地域协议族通常使用如下专用结构体：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/un.h&gt;</span></span><br><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_un</span></span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-type">sa_family_t</span> sin_family;     <span class="hljs-comment">// 地址协议族：AF_UNIX</span><br>    <span class="hljs-type">char</span> sun_path[<span class="hljs-number">108</span>];         <span class="hljs-comment">// 文件路径名</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>TCP&#x2F;IP协议族则有sockaddr_in 和 sockaddr_in6 两个专用socket地址结构体，分别用于IPv4和IPv6。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span></span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-type">sa_family_t</span> sa_family;      <span class="hljs-comment">// 地址协议族：AF_INET</span><br>    <span class="hljs-type">u_int16_t</span> sin_port;         <span class="hljs-comment">// 端口号，需要用网络字节序表示</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> <span class="hljs-title">sin_addr</span>;</span>    <span class="hljs-comment">// IPv4结构体</span><br>&#125;;<br><br><span class="hljs-comment">// IPv4结构体</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span></span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-type">u_int32_t</span> s_addr;           <span class="hljs-comment">// IPv4地址，需要用网络字节序表示</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in6</span></span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-type">sa_family_t</span> sin6_family;    <span class="hljs-comment">// 地址协议族：AF_INET6</span><br>    <span class="hljs-type">u_int16_t</span> sin6_port;        <span class="hljs-comment">// 端口号，需要用网络字节序表示</span><br>    <span class="hljs-type">u_int32_t</span> sin6_flowinfo;    <span class="hljs-comment">// 流信息，应设置为0</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in6_addr</span> <span class="hljs-title">sin6_addr</span>;</span>  <span class="hljs-comment">// IPv6地址结构体</span><br>    <span class="hljs-type">u_int32_t</span> sin6_scope_id;    <span class="hljs-comment">// scope ID, 暂时处于实验阶段，不使用</span><br>&#125;;<br><br><span class="hljs-comment">// IPv6地址结构体</span><br><span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in6_addr</span></span><br><span class="hljs-class">&#123;</span><br>    <span class="hljs-type">unsigned</span> <span class="hljs-type">char</span> sa_addr[<span class="hljs-number">16</span>];  <span class="hljs-comment">// IPv6地址，需要用网络字节序表示</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+
+<h3 id="2-IP地址转换"><a href="#2-IP地址转换" class="headerlink" title="2. IP地址转换"></a>2. IP地址转换</h3><p>下列3个函数能够用于点分十进制字符串表示的IPv4地址与用网络字节序整数表示的IPv4地址之间的转换：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;arpa/inet.h&gt;</span></span><br><br><span class="hljs-comment">// 将点分十进制字符串的地址转换为网络字节序整数地址, 失败时返回INADDR_NONE</span><br><span class="hljs-type">in_addr_t</span> <span class="hljs-title function_">inet_addr</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>* strptr)</span>;<br><br><span class="hljs-comment">// 作用与inet_addr一样，但会将转换的结果存储于inp所指向的地址结构体中，成功返回1，失败返回0；</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">inet_aton</span><span class="hljs-params">(<span class="hljs-type">const</span> <span class="hljs-type">char</span>* cp, <span class="hljs-keyword">struct</span> in_addr* inp)</span>;<br><br><span class="hljs-comment">// 将网络字节序表示的地址转为点分十进制字符串</span><br><span class="hljs-type">char</span>* <span class="hljs-title function_">inet_ntoa</span><span class="hljs-params">(<span class="hljs-keyword">struct</span> in_addr in)</span>;<br></code></pre></td></tr></table></figure>
+<p>NOTE: 需要注意的是，inet_ntoa内部是使用一个静态变量存储转换的结果，函数的返回值则指向该静态内存，因此inet_ntoa是不可重入的，即当再次调用该函数时，静态变量内存中的结果将被新的覆盖。<br>例如：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;arpa/inet.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;netinet/in.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;sys/socket.h&gt;</span></span><br><br><span class="hljs-type">int</span> <span class="hljs-title function_">main</span><span class="hljs-params">()</span><br>&#123;<br><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> <span class="hljs-title">addr1</span> =</span> &#123;<span class="hljs-number">0x8417a8c0</span>&#125;;    <span class="hljs-comment">// 192.168.23.132 反转后的16进制</span><br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">in_addr</span> <span class="hljs-title">addr2</span> =</span> &#123;<span class="hljs-number">0xb90d190a</span>&#125;;    <span class="hljs-comment">// 10.25.13.185 反转后的16进制</span><br><br>    <span class="hljs-type">char</span>* value1 = inet_ntoa(addr1);<br>    <span class="hljs-type">char</span>* value2 = inet_ntoa(addr2);<br><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;addr 1: %s\n&quot;</span>, value1);         <span class="hljs-comment">// addr 1: 10.25.13.185</span><br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;addr 2: %s\n&quot;</span>, value2);         <span class="hljs-comment">// addr 2: 10.25.13.185</span><br><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>以下更新的函数也能实现与前述3个函数一样的功能，并且能够同时适用于IPv4和IPv6地址：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;arpa/inet.h&gt;</span></span><br><br><span class="hljs-comment">// 将使用点分十进制字符串（IPv4）或十六进制字符串（IPv6）表示的IP地址src 转换为网络字节序表示的IP地址，并将转换结果存储于dst所指向的内存中，其中，af指定地址族，AF_INET或者AF_INET6。函数成功返回1，失败返回0并设置errno。</span><br><span class="hljs-type">int</span> <span class="hljs-title function_">inet_pton</span><span class="hljs-params">(<span class="hljs-type">int</span> af, <span class="hljs-type">const</span> <span class="hljs-type">char</span>* src, <span class="hljs-type">void</span>* dst)</span>;<br><br><span class="hljs-comment">// 执行相反的转换，参数类似，其中，cnt指定目标存储单元的大小。函数成功返回目标存储单元的地址，失败则返回NULL并设置errno</span><br><span class="hljs-type">const</span> <span class="hljs-type">char</span>* <span class="hljs-title function_">inet_ntop</span><span class="hljs-params">(<span class="hljs-type">int</span> af, <span class="hljs-type">const</span> <span class="hljs-type">void</span>* src, <span class="hljs-type">char</span>* dst, <span class="hljs-type">socklen_t</span> cnt)</span>;<br></code></pre></td></tr></table></figure>
+<p>其中下列宏能够为cnt指定大小：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-keyword">include</span> <span class="hljs-string">&lt;netinet/in.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> INET_ADDRSTRLEN 16</span><br><span class="hljs-meta">#<span class="hljs-keyword">define</span> INET6_ADDRSTRLEN 46</span><br></code></pre></td></tr></table></figure>
+
+
+<h4 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h4><p>[1] Linux高性能服务器编程 游双著.</p>
 
                 
               </div>
@@ -364,8 +377,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Linux网络服务器编程01--关于主机字节序和网络字节序</div>
-      <div>https://shuhuicoder.github.io/2023/04/13/ch20230413/</div>
+      <div>Linux网络服务器编程02--关于socket地址及API</div>
+      <div>https://shuhuicoder.github.io/2023/06/29/ch20230629/</div>
     </div>
     <div class="license-meta">
       
@@ -377,7 +390,7 @@
       
         <div class="license-meta-item license-meta-date">
           <div>发布于</div>
-          <div>2023年4月13日</div>
+          <div>2023年6月29日</div>
         </div>
       
       
@@ -409,9 +422,9 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/06/29/ch20230629/" title="Linux网络服务器编程02--关于socket地址及API">
+                      <a href="/2023/06/30/ch20230630/" title="Linux网络服务器编程03--socket使用流程、API以及数据的读写">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Linux网络服务器编程02--关于socket地址及API</span>
+                        <span class="hidden-mobile">Linux网络服务器编程03--socket使用流程、API以及数据的读写</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
@@ -419,8 +432,8 @@
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2023/04/08/ch20230408/" title="一个利用C11实现的简单计算器应用">
-                        <span class="hidden-mobile">一个利用C11实现的简单计算器应用</span>
+                      <a href="/2023/04/13/ch20230413/" title="Linux网络服务器编程01--关于主机字节序和网络字节序">
+                        <span class="hidden-mobile">Linux网络服务器编程01--关于主机字节序和网络字节序</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
