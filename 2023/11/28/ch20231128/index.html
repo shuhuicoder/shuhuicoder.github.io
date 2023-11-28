@@ -1,0 +1,769 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/princeIcon.jpg">
+  <link rel="icon" href="/img/princeIcon.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="shuhui">
+  <meta name="keywords" content="Blog, 博客, 主页, 技术">
+  
+    <meta name="description" content="1. Docker安装可以在Windows本地环境安装Docker Desktop也可以在虚拟机环境Ubuntu中安装，实测在Windows本地安装实际上也是会需要安装在WSL2中的Linux子系统，同时，实测在本地安装启动docker容器要比在vmware虚拟机中所占用的内存要大很多，因此，看个人情况选择安装方式。此外，由于triton的官方镜像较大，因此，如果是在虚拟机中安装使用，建议虚拟机创">
+<meta property="og:type" content="article">
+<meta property="og:title" content="在Windows本地或虚拟机中安装和部署triton推理服务">
+<meta property="og:url" content="https://shuhuicoder.github.io/2023/11/28/ch20231128/index.html">
+<meta property="og:site_name" content="ShuHui&#39;s Blog">
+<meta property="og:description" content="1. Docker安装可以在Windows本地环境安装Docker Desktop也可以在虚拟机环境Ubuntu中安装，实测在Windows本地安装实际上也是会需要安装在WSL2中的Linux子系统，同时，实测在本地安装启动docker容器要比在vmware虚拟机中所占用的内存要大很多，因此，看个人情况选择安装方式。此外，由于triton的官方镜像较大，因此，如果是在虚拟机中安装使用，建议虚拟机创">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shuhuicoder.github.io/images/nvidia_triton.png">
+<meta property="article:published_time" content="2023-11-28T13:11:07.000Z">
+<meta property="article:modified_time" content="2023-11-28T13:23:09.995Z">
+<meta property="article:author" content="ShuHui">
+<meta property="article:tag" content="triton">
+<meta property="article:tag" content="人工智能， NVIDIA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shuhuicoder.github.io/images/nvidia_triton.png">
+  
+  
+  
+  <title>在Windows本地或虚拟机中安装和部署triton推理服务 - ShuHui&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"shuhuicoder.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":["home"]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ShuHui&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/images/nvidia_triton.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">在Windows本地或虚拟机中安装和部署triton推理服务</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-11-28 21:11" pubdate>
+          2023年11月28日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.5k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          29 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">在Windows本地或虚拟机中安装和部署triton推理服务</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：几秒前
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="1-Docker安装"><a href="#1-Docker安装" class="headerlink" title="1. Docker安装"></a>1. Docker安装</h3><p>可以在Windows本地环境安装Docker Desktop也可以在虚拟机环境Ubuntu中安装，实测在Windows本地安装实际上也是会需要安装在WSL2中的Linux子系统，同时，实测在本地安装启动docker容器要比在vmware虚拟机中所占用的内存要大很多，因此，看个人情况选择安装方式。<br>此外，由于triton的官方镜像较大，因此，如果是在虚拟机中安装使用，建议虚拟机创建时分配大一些的磁盘空间，个人建议60G+。</p>
+<h4 id="1-1-Windows安装Docker-Desktop"><a href="#1-1-Windows安装Docker-Desktop" class="headerlink" title="1.1 Windows安装Docker Desktop"></a>1.1 Windows安装Docker Desktop</h4><ul>
+<li><ol>
+<li>关于如何安装Windows子系统WSL2可以查看这里<a href="https://shuhuicoder.github.io/2023/07/13/ch20230713/">在Windows10中安装WSL1&amp;2，并配置C&#x2F;C++和VSCode环境 - ShuHui’s Blog (shuhuicoder.github.io)</a></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>下载Docker for windows下一步安装即可</li>
+</ol>
+</li>
+</ul>
+<h4 id="1-2-Ubuntu安装Docker"><a href="#1-2-Ubuntu安装Docker" class="headerlink" title="1.2 Ubuntu安装Docker"></a>1.2 Ubuntu安装Docker</h4><ul>
+<li><ol>
+<li>卸载旧版本，不管有没有都执行一下吧，大多数命令都需要root权限，因此可以使用<code>sudo -i</code>切换到root用户：  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">sudo apt-get remove docker docker-engine docker.io containerd runc<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>设置存储库：  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">安装软件包以允许 apt 通过 HTTPS 使用存储库</span><br>apt-get install \<br>	apt-transport-https \<br>	ca-certificates \<br>	curl \<br>	gnupg-agent \<br>	software-properties-common<br><span class="hljs-meta prompt_"># </span><span class="language-bash">添加 Docker 的官方 GPG 密钥</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash">设置稳定的存储库</span><br>add-apt-repository \<br>   &quot;deb [arch=amd64] https://download.docker.com/linux/ubuntu \<br><span class="hljs-meta prompt_">   $</span><span class="language-bash">(lsb_release -cs) \</span><br><span class="language-bash">   stable<span class="hljs-string">&quot;</span></span><br><span class="hljs-meta prompt_"># </span><span class="language-bash"><span class="hljs-string">更新 apt 包索引</span></span><br>apt-get update<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="3">
+<li>安装Docker和相关工具包  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">apt-get install docker-ce docker-ce-cli containerd.io<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="4">
+<li>验证是否安装成功<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker --version<br><span class="hljs-meta prompt_"># </span><span class="language-bash">启动docker</span><br>service docker start<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="5">
+<li>配置镜像源<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_"># </span><span class="language-bash">创建文件夹 不先创建保存文件可能提示权限不足(root用户忽略)</span><br>mkdir /etc/docker <br><span class="hljs-meta prompt_"># </span><span class="language-bash">编辑文件</span><br>vim /etc/docker/daemon.json<br><span class="hljs-meta prompt_"># </span><span class="language-bash">文件内容</span><br>&#123;<br>  &quot;registry-mirrors&quot;: [&quot;https://hub-mirror.c.163.com&quot;]<br>&#125;<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="6">
+<li>重启docker<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">service docker restart<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+<h3 id="2-triton安装部署"><a href="#2-triton安装部署" class="headerlink" title="2. triton安装部署"></a>2. triton安装部署</h3><ul>
+<li><ol>
+<li>triton官方镜像拉取<a target="_blank" rel="noopener" href="https://catalog.ngc.nvidia.com/orgs/nvidia/containers/tritonserver/tags">Triton Inference Server | NVIDIA NGC</a>，根据网速情况，可能需要一些时间，镜像大小大概20-30G？注意磁盘空间的占用，如果大小不够，可以更改docker镜像的默认存储位置，对于vm虚拟机则需要注意分配大一些的磁盘空间。Windows中可以在Docker Desktop中的设置进行更改。  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker pull nvcr.io/nvidia/tritonserver:21.10-py3<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>通过镜像创建一个新容器并运行，通过一下命令将会创建一个新的容器，并进入到改容器。<br>note：需要注意的是 –rm 命令选项将会在退出容器时将容器删除，如果不希望如此，则不需要带该选项！！！  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker run --gpus &#x27;&quot;device=0&quot;&#x27; --net host --rm -itd -p8000:8000 -v /tmp:/opt/tmp --shm-size 1g nvcr.io/nvidia/tritonserver:21.10-py3 /bin/bash<br><br>--gpus : 挂载GPU显卡，all是挂载所有<br>--net : 指定容器的网络连接类型，支持 bridge/host/none/container: 四种类型。<br>-i : 以交互模式启动<br>-t : 以附加进程方式启动，为容器重新分配一个伪输入终端<br>-d : 后台运行容器，并返回容器ID<br>-v : 挂载宿主机目录，例如：将宿主机中的/tmp目录挂载到容器中的/op/tmp目录<br>--shm-size : 共享内存大小，如：1g<br>--rm : 执行 docker run 命令带 --rm 命令选项，等价于在容器退出后，执行docker rm -v, 即在容器退出时会将容器清理删除<br>nvcr.io/nvidia/tritonserver:21.10-py3 : 镜像名和版本<br>/bin/bash : 用于在支持/bin/bash脚本的容器中执行相应命令, 登录到容器内部，可以通过shell和这个容器即ubuntu交互，可以执行各种Linux命令<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="3">
+<li>拉取triton inference server的源码<a target="_blank" rel="noopener" href="https://github.com/triton-inference-server/server">GitHub - triton-inference-server&#x2F;server: The Triton Inference Server provides an optimized cloud and edge inferencing solution.</a>， 当然需要在某个路径下，例如在&#x2F;home目录下，</li>
+</ol>
+</li>
+<li>Note: 需要注意的是，这里开始所执行的命令都是在docker中的容器中，而不是宿主机Ubuntu。  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd /home<br>mkdir ./triton_test<br>git clone https://github.com/triton-inference-server/server.git<br></code></pre></td></tr></table></figure></li>
+<li><ol start="4">
+<li>运行server-main源码中的example示例  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs shell">cd ./docs/examples<br>./fetch_models.sh       # 这里将会拉取一些模型repos，需要一些时间<br></code></pre></td></tr></table></figure>
+拉取完模型repos之后，当前目录下就会出现<code>model_repository</code>目录，里面可以看到相应的一些示例模型</li>
+</ol>
+</li>
+<li><ol start="5">
+<li>启动triton服务  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">/examples# </span><span class="language-bash">tritonserver --model-repos=./model_repository/</span><br></code></pre></td></tr></table></figure>
+在经过一段模型加载之后，当出现如下页面，则证明模型加载成功，triton服务正确启动<img src="/2023/11/28/ch20231128/Pasted%20image%2020231124110142.png" srcset="/img/loading.gif" lazyload alt="Alt text"></li>
+</ol>
+</li>
+<li><ol start="6">
+<li>外部验证服务是否正确启动<br>在终端新开一个窗口，可以通过docker start -i containerID来进入容器，查看当前的容器是docker ps -a命令，或者直接在虚拟机ubuntu的终端执行，在虚拟机外部本机，则将localhost替换为虚拟机内ubuntu的ip即可。  <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">curl -v localhost:8000/v2/health/ready<br></code></pre></td></tr></table></figure>
+出现如下界面则表示服务启动成功，可以正常访问<br><img src="/2023/11/28/ch20231128/Pasted%20image%2020231124110615.png" srcset="/img/loading.gif" lazyload alt="Alt text"></li>
+</ol>
+</li>
+</ul>
+<h3 id="3-附录：Docker的一些基本使用"><a href="#3-附录：Docker的一些基本使用" class="headerlink" title="3. 附录：Docker的一些基本使用"></a>3. 附录：Docker的一些基本使用</h3><ul>
+<li><ol>
+<li>docker启动容器<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker start -i containerId</span><br>-i 以交互模式启动<br>-t 以附加进程方式启动，为容器重新分配一个伪输入终端<br>一般-i和-t一起使用，即-it	<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>docker停止、删除容器<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs shell"><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker ps // 查看所有正在运行容器</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker stop containerId // containerId 是容器的ID</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker ps -a // 查看所有容器</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker ps -a -q // 查看所有容器ID</span><br><span class="hljs-meta prompt_"></span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker stop $(docker ps -a -q) //  stop停止所有容器</span><br><span class="hljs-meta prompt_">$ </span><span class="language-bash">docker  <span class="hljs-built_in">rm</span> $(docker ps -a -q) //   remove删除所有容器</span><br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+<li><ol start="3">
+<li>查看容器的工作的网络模式<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs shell">方式一：<br>1. 列出docker的所有模式<br>	docker network ls<br>2. 针对不同的模式分别查看哪些container在其中<br>	docker network inspect bridge<br>	docker network inspect host<br>方式二：<br>1. 直接查看container的信息，找到network段查看。或者用grep筛选出network。<br>	docker inspect 容器名/容器ID<br>	docker inspect 容器名/容器ID | grep -i “network”<br>	其中grep的“-i”表示不区分大小写。<br></code></pre></td></tr></table></figure>
+<img src="/2023/11/28/ch20231128/Pasted%20image%2020231109111210.png" srcset="/img/loading.gif" lazyload alt="Alt text"></li>
+</ol>
+</li>
+<li><ol start="4">
+<li>将宿主机文件拷贝到docker容器<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs shell">docker cp file 容器ID:容器中的目录<br></code></pre></td></tr></table></figure></li>
+</ol>
+</li>
+</ul>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/triton/" class="category-chain-item">triton</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/triton/">#triton</a>
+      
+        <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%EF%BC%8C-NVIDIA/">#人工智能， NVIDIA</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>在Windows本地或虚拟机中安装和部署triton推理服务</div>
+      <div>https://shuhuicoder.github.io/2023/11/28/ch20231128/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>shuhui</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年11月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/09/19/ch20230919/" title="Linux网络服务器编程06-select、poll和epoll的使用与比较">
+                        <span class="hidden-mobile">Linux网络服务器编程06-select、poll和epoll的使用与比较</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'shuhuicoder/blogcomments');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://blog.csdn.net/Js12138?type=blog" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/shuhuicoder" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
