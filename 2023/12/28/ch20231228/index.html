@@ -1,0 +1,701 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/princeIcon.jpg">
+  <link rel="icon" href="/img/princeIcon.jpg">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="shuhui">
+  <meta name="keywords" content="Blog, 博客, 主页, 技术">
+  
+    <meta name="description" content="1. 模型仓库的目录结构如图所示是一个模型仓库的一般结构，其中”yolov5-model”是仓库目录的名称，“1”是模型版本目录，config.pbtxt是配置文件，model.py是模型推理的源码，models和utils目录中包含一些推理时需要用到的文件，这里是直接从Yolov5的源码中复制过来了。而模型权重文件yolov5n.pt则放在了models目录下。 2. config.pbtxt1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Triton使用python backend方式部署Yolov5模型">
+<meta property="og:url" content="https://shuhuicoder.github.io/2023/12/28/ch20231228/index.html">
+<meta property="og:site_name" content="ShuHui&#39;s Blog">
+<meta property="og:description" content="1. 模型仓库的目录结构如图所示是一个模型仓库的一般结构，其中”yolov5-model”是仓库目录的名称，“1”是模型版本目录，config.pbtxt是配置文件，model.py是模型推理的源码，models和utils目录中包含一些推理时需要用到的文件，这里是直接从Yolov5的源码中复制过来了。而模型权重文件yolov5n.pt则放在了models目录下。 2. config.pbtxt1">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shuhuicoder.github.io/images/nvidia_triton.png">
+<meta property="article:published_time" content="2023-12-28T15:20:42.000Z">
+<meta property="article:modified_time" content="2023-12-28T15:26:58.334Z">
+<meta property="article:author" content="ShuHui">
+<meta property="article:tag" content="triton">
+<meta property="article:tag" content="人工智能">
+<meta property="article:tag" content="NVIDIA">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://shuhuicoder.github.io/images/nvidia_triton.png">
+  
+  
+  
+  <title>Triton使用python backend方式部署Yolov5模型 - ShuHui&#39;s Blog</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"shuhuicoder.github.io","root":"/","version":"1.9.3","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":["home"]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml"};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>ShuHui&#39;s Blog</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              &nbsp;<i class="iconfont icon-search"></i>&nbsp;
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/images/nvidia_triton.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle">Triton使用python backend方式部署Yolov5模型</span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-12-28 23:20" pubdate>
+          2023年12月28日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          4.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          34 分钟
+        
+      </span>
+    
+
+    
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Triton使用python backend方式部署Yolov5模型</h1>
+            
+              <p class="note note-info">
+                
+                  
+                    本文最后更新于：1 分钟前
+                  
+                
+              </p>
+            
+            
+              <div class="markdown-body">
+                
+                <h3 id="1-模型仓库的目录结构"><a href="#1-模型仓库的目录结构" class="headerlink" title="1. 模型仓库的目录结构"></a>1. 模型仓库的目录结构</h3><p>如图所示是一个模型仓库的一般结构，其中”yolov5-model”是仓库目录的名称，“1”是模型版本目录，config.pbtxt是配置文件，model.py是模型推理的源码，models和utils目录中包含一些推理时需要用到的文件，这里是直接从Yolov5的源码中复制过来了。而模型权重文件yolov5n.pt则放在了models目录下。<br><img src="/2023/12/28/ch20231228/Pasted%20image%2020231227160332.png" srcset="/img/loading.gif" lazyload alt="Alt text"></p>
+<h3 id="2-config-pbtxt"><a href="#2-config-pbtxt" class="headerlink" title="2. config.pbtxt"></a>2. config.pbtxt</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs shell">name: &quot;yolov5-model&quot;<br>backend: &quot;python&quot;<br>input [<br>  &#123;<br>    name: &quot;INPUT0&quot;<br>    data_type: TYPE_UINT8<br>    dims: [640,640,3]<br>  &#125;<br>]<br>output [<br>    &#123;<br>      name: &quot;OUTPUT0&quot;<br>      data_type: TYPE_FP32<br>      dims: [-1]<br>    &#125;<br>]<br><br>instance_group [<br>  &#123;<br>    count: 1<br>    kind: KIND_GPU<br>  &#125;<br>]<br></code></pre></td></tr></table></figure>
+<ul>
+<li>name: 模型的名称，需要与模型仓库的目录名称保持一致</li>
+<li>backend: 模型训练使用的框架，通常例如tensorflow训练保存的模型，或者onnx模型，这里是使用pytorch训练的pt模型，为python backend，即自定义保存的模型</li>
+<li>input: 模型的输入，包含名称定义，数据类型定义和数据的结构，这里是输入的是图像，限定数据结构为640x640x3的大小，分别对应height，width和channel，如果height和width都设置为-1，则表示动态大小，模型可以接受任意大小的输入，否则，需要在client端酱图像输入大小resize到限定的大小</li>
+<li>output: 模型的输出结果，包含名称定义，数据类型和数据结构，应为yolov5实际上是一个分类模型，其输出是一个一维的数组，-1则表示任意大小&#x2F;长度</li>
+<li>instance_group:<ul>
+<li>count表示模型的实例数，count&#x3D;1表示triton server只会起用一个模型实例，根据需要和GPU资源，可以设定更多的实例，triton server将会自动的通过负载均衡来调用不同的实例进行推理；</li>
+<li>kind: 表示推理时使用的显卡GPU活cpu，若使用cpu则为KIND_CPU<br>   note: 使用CPU进行推理也是可以设置多个count模型实例的</li>
+</ul>
+</li>
+</ul>
+<h3 id="3-model-py"><a href="#3-model-py" class="headerlink" title="3. model.py"></a>3. model.py</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> json<br><span class="hljs-keyword">import</span> os<br><span class="hljs-keyword">import</span> numpy <span class="hljs-keyword">as</span> np<br><span class="hljs-keyword">import</span> torch<br><span class="hljs-keyword">import</span> triton_python_backend_utils <span class="hljs-keyword">as</span> pb_utils<br><span class="hljs-keyword">from</span> models.experimental <span class="hljs-keyword">import</span> attempt_load<br><span class="hljs-keyword">from</span> utils.general <span class="hljs-keyword">import</span> scale_coords, non_max_suppression<br> <br><br><span class="hljs-comment"># 当前文件所在的绝对路径</span><br>current_path = os.path.dirname(os.path.abspath(__file__))<br><span class="hljs-comment"># 根据当前路径获取模型权重文件路径</span><br>weights = os.path.join(current_path, <span class="hljs-string">&#x27;../1/models/yolov5n.pt&#x27;</span>)<br><br><span class="hljs-comment"># 自定义的模型必须使用相同的类名</span><br><span class="hljs-keyword">class</span> <span class="hljs-title class_">TritonPythonModel</span>:<br>    <span class="hljs-string">&quot;&quot;&quot;Your Python model must use the same class name. Every Python model</span><br><span class="hljs-string">    that is created must have &quot;TritonPythonModel&quot; as the class name.</span><br><span class="hljs-string">    &quot;&quot;&quot;</span><br><br>    <span class="hljs-comment"># 模型加载和初始化</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">initialize</span>(<span class="hljs-params">self, args</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;`initialize` is called only once when the model is being loaded.</span><br><span class="hljs-string">        Implementing `initialize` function is optional. This function allows</span><br><span class="hljs-string">        the model to initialize any state associated with this model.&quot;&quot;&quot;</span><br><br>        <span class="hljs-comment"># 加载配置文件，会自动加载config.pbtxt</span><br>        model_config = json.loads(args[<span class="hljs-string">&#x27;model_config&#x27;</span>])<br>        self.model_config = model_config<br>        <span class="hljs-comment"># 定义模型输出，其中参数要与config.pbtxt中的name值一致，下同</span><br>        output0_config = pb_utils.get_output_config_by_name(model_config, <span class="hljs-string">&quot;OUTPUT0&quot;</span>)<br>        <span class="hljs-comment"># 获取输出类型</span><br>        self.output_dtype = pb_utils.triton_string_to_numpy(output0_config[<span class="hljs-string">&#x27;data_type&#x27;</span>])<br>        <span class="hljs-comment"># 获取是否使用GPU or CPU</span><br>        self.device = torch.device(<span class="hljs-string">&#x27;cuda&#x27;</span> <span class="hljs-keyword">if</span> torch.cuda.is_available() <span class="hljs-keyword">else</span> <span class="hljs-string">&#x27;cpu&#x27;</span>)<br>        <span class="hljs-comment"># 加载模型权重文件，该方法来自于yolov5提供的方法</span><br>        self.model = attempt_load(weights, device=self.device)<br>        <span class="hljs-comment"># 采用预测的模式，因此通过eval()来冻结BatchNorm和Dropout等，若不设置，在batchsize较小时，可能会出现结果异常，</span><br>        self.model.<span class="hljs-built_in">eval</span>()<br>        <span class="hljs-keyword">if</span> self.device == <span class="hljs-string">&#x27;cuda&#x27;</span>:<br>            <span class="hljs-comment"># 如果使用GPU进行推理，则可以使用半精度数据类型来计算推理，半精度FP16比高精度FP32的推理速度要提升一倍左右</span><br>            self.model.half()<br>  <br>    <span class="hljs-comment"># 获取请求并执行模型推理</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">execute</span>(<span class="hljs-params">self, requests</span>):<br>        <span class="hljs-comment"># 定义响应数组</span><br>        responses = []<br>        <span class="hljs-comment"># 处理收到的推理请求</span><br>        <span class="hljs-keyword">for</span> request <span class="hljs-keyword">in</span> requests:<br>            <span class="hljs-comment"># 获取输入</span><br>            in_0 = pb_utils.get_input_tensor_by_name(request, <span class="hljs-string">&#x27;INPUT0&#x27;</span>).as_numpy()<br>            <span class="hljs-comment"># 定义模型输出结果</span><br>            results = np.array([]).reshape(<span class="hljs-number">0</span>, <span class="hljs-number">6</span>)<br>            <span class="hljs-comment"># 将数据转换为tensor，并加载到GPU</span><br>            im = torch.from_numpy(in_0).to(self.device)<br>            <span class="hljs-comment"># 与model.half()一致，使用半精度运算</span><br>            im = im.<span class="hljs-built_in">float</span>() <span class="hljs-keyword">if</span> self.device == <span class="hljs-string">&#x27;cpu&#x27;</span> <span class="hljs-keyword">else</span> im.half()<br>            <span class="hljs-comment"># 将图像像素值归一化</span><br>            im /= <span class="hljs-number">255.0</span><br>  <br>            <span class="hljs-comment"># 模型推理</span><br>            <span class="hljs-keyword">with</span> torch.no_grad():<br>                pred = self.model(im)[<span class="hljs-number">0</span>]<br>            <span class="hljs-comment"># NMS非极大值抑制，是yolov5用于处理一些冗余预测框的算法</span><br>            pred = non_max_suppression(pred, conf_thres=<span class="hljs-number">0.25</span>, iou_thres=<span class="hljs-number">0.45</span>, classes=<span class="hljs-literal">None</span>)<br> <br>            <span class="hljs-comment"># 处理预测结果</span><br>            <span class="hljs-keyword">for</span> i, det <span class="hljs-keyword">in</span> <span class="hljs-built_in">enumerate</span>(pred):<br>                <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(det):<br>                    det[:, :<span class="hljs-number">4</span>] = scale_coords(im.shape[<span class="hljs-number">2</span>:], det[:, :<span class="hljs-number">4</span>], in_0.shape).<span class="hljs-built_in">round</span>()<br>                    <span class="hljs-comment"># conf为预测框的置信度，cls为预测的分类</span><br>                    <span class="hljs-keyword">for</span> *xyxy, conf, cls <span class="hljs-keyword">in</span> det:<br>                        <span class="hljs-comment"># 预测框的坐标</span><br>                        x1, y1, x2, y2 = <span class="hljs-built_in">map</span>(<span class="hljs-built_in">float</span>, xyxy)<br>                        results = np.vstack((results, np.array([x1, y1, x2, y2, <span class="hljs-built_in">float</span>(conf), <span class="hljs-built_in">int</span>(cls)])))<br>            <span class="hljs-comment"># 将预测结果转为指定类型的tensor输出</span><br>            out_tensor_0 = pb_utils.Tensor(<span class="hljs-string">&#x27;OUTPUT0&#x27;</span>, results.astype(self.output_dtype))<br>            <span class="hljs-comment"># 将输出结果封装为响应数据</span><br>            inference_response = pb_utils.InferenceResponse([out_tensor_0])<br>            responses.append(inference_response)<br>        <span class="hljs-comment"># 返回响应数据</span><br>        <span class="hljs-keyword">return</span> responses<br>        <br>    <span class="hljs-comment"># 退出清理</span><br>    <span class="hljs-keyword">def</span> <span class="hljs-title function_">finalize</span>(<span class="hljs-params">self</span>):<br>        <span class="hljs-string">&quot;&quot;&quot;`finalize` is called only once when the model is being unloaded.</span><br><span class="hljs-string">        Implementing `finalize` function is optional. This function allows</span><br><span class="hljs-string">        the model to perform any necessary clean ups before exit.</span><br><span class="hljs-string">        &quot;&quot;&quot;</span><br>        <span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;Cleaning up...&quot;</span>)<br></code></pre></td></tr></table></figure>
+<h3 id="4-总结"><a href="#4-总结" class="headerlink" title="4. 总结"></a>4. 总结</h3><p>总的来说使用Triton框架来简单部署模型还是比较容易的，只需要关注模型的输入和输出即可，而这一部分通常都能在模型训练的源码中找到，其他的请求数据和响应数据都由Triton进行了自动封装。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/triton/" class="category-chain-item">triton</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+    <div class="post-meta">
+      <i class="iconfont icon-tags"></i>
+      
+        <a href="/tags/triton/">#triton</a>
+      
+        <a href="/tags/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD/">#人工智能</a>
+      
+        <a href="/tags/NVIDIA/">#NVIDIA</a>
+      
+    </div>
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Triton使用python backend方式部署Yolov5模型</div>
+      <div>https://shuhuicoder.github.io/2023/12/28/ch20231228/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>shuhui</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年12月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/11/28/ch20231128/" title="在Windows本地或虚拟机中安装和部署triton推理服务">
+                        <span class="hidden-mobile">在Windows本地或虚拟机中安装和部署triton推理服务</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+  <article id="comments" lazyload>
+    
+  <script type="text/javascript">
+    Fluid.utils.loadComments('#comments', function() {
+      var light = 'github-light';
+      var dark = 'github-dark';
+      var schema = document.documentElement.getAttribute('data-user-color-scheme');
+      if (schema === 'dark') {
+        schema = dark;
+      } else {
+        schema = light;
+      }
+      window.UtterancesThemeLight = light;
+      window.UtterancesThemeDark = dark;
+      var s = document.createElement('script');
+      s.setAttribute('src', 'https://utteranc.es/client.js');
+      s.setAttribute('repo', 'shuhuicoder/blogcomments');
+      s.setAttribute('issue-term', 'pathname');
+      
+      s.setAttribute('label', 'utterances');
+      
+      s.setAttribute('theme', schema);
+      s.setAttribute('crossorigin', 'anonymous');
+      document.getElementById('comments').appendChild(s);
+    })
+  </script>
+  <noscript>Please enable JavaScript to view the comments</noscript>
+
+
+  </article>
+
+
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> <i class="iconfont icon-love"></i> <a href="https://blog.csdn.net/Js12138?type=blog" target="_blank" rel="nofollow noopener"><span>CSDN</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/shuhuicoder" target="_blank" rel="nofollow noopener"><span>GitHub</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.0/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.18.2/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/tororo.model.json"},"display":{"position":"right","width":150,"height":300},"mobile":{"show":false},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
